@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>aciPlugin demo - A helper for jQuery plugin creation</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script type="text/javascript" src="js/jquery.min.js"></script>
+        <script type="text/javascript" src="js/jquery.aciPlugin.js"></script>
+    </head>
+    <body>
+
+        <a class="button" href="#" title="">button</a> (changed each time) <br />
+        <a class="button1" href="#" title="">button 1</a> <br />
+        <a class="button2" href="#" title="">button 2</a> <br />
+        <a class="button3" href="#" title="">button 3</a> <br />
+        <a class="button4" href="#" title="">button 4</a> <br />
+        <a class="button5" href="#" title="">button 5</a> <br />
+        <a class="button6" href="#" title="">button 6</a> <br />
+
+        <script type="text/javascript">
+
+            // create 'myButton' plugin ...
+
+            (function($){
+
+                // create myButton plugin to make a link (for example) into a button
+                // with padding set, a background color and display inline-block
+                aciPluginClass.plugins.myButton = aciPluginClass.aciPluginUi.extend({
+                    init: function(){
+                        this._super();
+                        // we do not use states for this plugin ...
+                        // but we should check for 'wasInit' for a stateful plugin
+                        // (and implement the 'destroy' function)
+                        this._instance.jQuery.css({
+                            display: 'inline-block',
+                            'background-color': this._instance.options.bg,
+                            padding: this._instance.options.padding
+                        });
+                        // destroy it cause there is no need for it anymore (the job was done)
+                        this.destroy();
+                    }
+                });
+
+                // register the plugin to be usable (with default options set)
+                aciPluginClass.publish('myButton', {
+                    bg: '#ffc',
+                    padding: '15px'
+                });
+
+            })(jQuery);
+
+            // because the extended code it's not included yet (till this point)
+            // only the original plugin will be run (no borders yet...)
+
+            var timer = 0;
+
+            setTimeout(function(){
+                // use myButton plugin with the default options
+                $('a.button1,a.button').myButton();
+            }, timer += 1500);
+
+            setTimeout(function(){
+                // set one default option and use it again
+                $.fn.myButton.defaults.padding = '5px';
+                $('a.button2,a.button').myButton();
+            }, timer += 1500);
+
+            setTimeout(function(){
+                // run it again with an option set
+                $('a.button3,a.button').myButton({
+                    padding: '10px'
+                });
+            }, timer += 1500);
+
+            // extend 'myButton' plugin ...
+
+            (function($){
+
+                // extend myButton to set a border on the button
+                aciPluginClass.plugins.myButton = aciPluginClass.plugins.myButton.extend({
+                    init: function(){
+                        this._instance.jQuery.css({
+                            'border-style': this._instance.options.style,
+                            'border-width': this._instance.options.width,
+                            'border-color': this._instance.options.color
+                        });
+                        // call the original 'init'
+                        this._super();
+                    }
+                });
+
+                // add a few more default options
+                aciPluginClass.defaults('myButton', {
+                    style: 'solid',
+                    width: '1px',
+                    color: '#000'
+                });
+
+            })(jQuery);
+
+            // because the extended code it's 'visible' from this point on
+            // the original plugin was exdended and will be run with the border stuff
+
+            setTimeout(function(){
+                // use myButton plugin with the default (but changed) options
+                $('a.button4,a.button').myButton();
+            }, timer += 1500);
+
+            setTimeout(function(){
+                // set one default option and use it again
+                $.fn.myButton.defaults.style = 'dashed';
+                $('a.button5,a.button').myButton();
+            }, timer += 1500);
+
+            setTimeout(function(){
+                // run it again with options set
+                $('a.button6,a.button').myButton({
+                    autoInit: false, // init it later ;)
+                    padding: '10px',
+                    width: '4px',
+                    color: 'red',
+                    bg: 'cyan'
+                }).myButton('init');
+            }, timer += 1500);
+
+            // or using the 'api' ...
+
+            setTimeout(function(){
+                $('a.button6,a.button').myButton({
+                    autoInit: false, // init it later ;)
+                    padding: '10px',
+                    width: '4px',
+                    color: 'red',
+                    bg: 'cyan',
+                    style: 'dotted'
+                }).each(function(){
+                    // we need to get the 'api' for each element
+                    $(this).myButton('api').init();
+                });
+            }, timer += 1500);
+
+        </script>
+
+    </body>
+</html>
