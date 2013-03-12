@@ -3,10 +3,11 @@
     "title": "aciPlugin - A little jQuery plugin helper",
     "description": "aciPlugin can help you write extendable jQuery plugins. You can override a parent method, call the super method or other parent methods and keep instance based data. The extension to a plugin can have its own default options that will be added to the extended ones. aciPlugin has built in functionality to get/set plugin options and check the 'init' state (useful for stateful plugins).",
     "keywords": [
-    "treeview",
-    "tree",
-    "ui",
-    "ajax"
+    "extendable",
+    "instance",
+    "stateful",
+    "parent",
+    "super"
     ],
     "version": "1.0.0",
     "author": {
