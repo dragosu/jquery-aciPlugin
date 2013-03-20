@@ -1,6 +1,6 @@
 
 /*
- * aciPlugin little jQuery plugin helper v1.1.0
+ * aciPlugin little jQuery plugin helper v1.1.1
  * http://acoderinsights.ro
  *
  * Copyright (c) 2013 Dragos Ursu
@@ -8,7 +8,7 @@
  *
  * Require jQuery Library >= v1.2.3 http://jquery.com
  *
- * Date: Wed Mar 13 19:10 2013 +0200
+ * Date: Tue Mar 19 20:30 2013 +0200
  */
 
 /*
@@ -44,7 +44,7 @@
  * where 'yourPluginName' is the plugin name (same as the extended one)
  * and 'extraOptionsObject' is the extra options object to be added (to be available as $.fn.[yourPluginName].defaults).
  *
- * From within plugin methods and extension methods you can ...
+ * From within plugin methods you can ...
  *
  * Access instance data ( do not override predefined reserved keys, see '__construct' and '__extend' !!! ):
  *      this._instance.almostAnything = value;
@@ -115,7 +115,7 @@
                     this._super = parent[name];
                     // private data
                     var _private = this._private;
-                    if (extensionName){
+                    if (this._instance && extensionName){
                         // need extension name to access private data
                         var _entry = this._instance._private;
                         if (typeof _entry[extensionName] == 'undefined') {

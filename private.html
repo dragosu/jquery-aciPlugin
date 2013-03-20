@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>aciPlugin private data demo - A helper for jQuery plugin creation</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script type="text/javascript" src="js/jquery.min.js"></script>
+        <script type="text/javascript" src="js/jquery.aciPlugin.js"></script>
+    </head>
+    <body>
+
+        <p>Private data test: each call first increments the _instance and _private with a/b/c string values.<br />Calling 'before' will call the parent
+            method then output the values. Calling 'after' will output the values and after that will call the parent method.</p>
+
+        <p>Note: see the source code to understand what's going on with the 'privateDemo' implementation.</p>
+
+        <div></div>
+
+        <script type="text/javascript">
+
+            aciPluginClass.plugins.privateDemo = aciPluginClass.aciPluginUi.extend({
+                __extend: function(){
+                    this._instance.value = 'instance A';
+                    this._private.value = 'private A';
+                },
+                write_A: function(){
+                    this._instance.jQuery.append('from A: ' + this._instance.value + ' ' + this._private.value + '<br />');
+                },
+                before: function(){
+                    this._instance.value += '[a]';
+                    this._private.value += '[a]';
+                    this.write_A();
+                },
+                after: function(){
+                    this._instance.value += '[a]';
+                    this._private.value += '[a]';
+                    this.write_A();
+                }
+            }, 'private_a');
+
+            aciPluginClass.plugins.privateDemo = aciPluginClass.plugins.privateDemo.extend({
+                __extend: function(){
+                    this._super();
+                    // instance should override parent value
+                    this._instance.value = 'instance B';
+                    // private should remain local
+                    this._private.value = 'private B';
+                },
+                write_B: function(){
+                    this._instance.jQuery.append('from B: ' + this._instance.value + ' ' + this._private.value + '<br />');
+                },
+                before: function(){
+                    this._instance.value += '[b]';
+                    this._private.value += '[b]';
+                    this._super();
+                    this.write_A();
+                    this.write_B();
+                },
+                after: function(){
+                    this._instance.value += '[b]';
+                    this._private.value += '[b]';
+                    this.write_A();
+                    this.write_B();
+                    this._super();
+                }
+            }, 'private_b');
+
+            aciPluginClass.plugins.privateDemo = aciPluginClass.plugins.privateDemo.extend({
+                __extend: function(){
+                    this._super();
+                    // instance should override parent value
+                    this._instance.value = 'instance C';
+                    // private should remain local
+                    this._private.value = 'private C';
+                },
+                write_C: function(){
+                    this._instance.jQuery.append('from C: ' + this._instance.value + ' ' + this._private.value + '<br />');
+                },
+                before: function(){
+                    this._instance.value += '[c]';
+                    this._private.value += '[c]';
+                    this._super();
+                    this.write_A();
+                    this.write_B();
+                    this.write_C();
+                },
+                after: function(){
+                    this._instance.value += '[c]';
+                    this._private.value += '[c]';
+                    this.write_A();
+                    this.write_B();
+                    this.write_C();
+                    this._super();
+                }
+            }, 'private_c');
+
+            aciPluginClass.publish('privateDemo');
+
+            // call _super before write
+            $('div').append('before:<br/>').privateDemo('api').before();
+
+            // this will reset the values (in our case)
+            $('div').privateDemo('api').__extend();
+
+            // call _super after write
+            $('div').append('after:<br/>').privateDemo('api').after();
+
+        </script>
+
+    </body>
+</html>
