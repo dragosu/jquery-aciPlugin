@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>aciPlugin _super demo - A helper for jQuery plugin creation</title>
+        <title>aciPlugin _super demo - A jQuery plugin boilerplate</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <script type="text/javascript" src="js/jquery.min.js"></script>
         <script type="text/javascript" src="js/jquery.aciPlugin.js"></script>
@@ -21,34 +21,43 @@
         <div id="div2"></div>
         <div id="div3"></div>
 
-        <script type="text/javascript">
+        <pre style="padding:30px;border:1px dashed #000;background:#f6f6f6;display:inline-block;"></pre>
+
+        <script id="code" type="text/javascript">
 
             aciPluginClass.plugins.superDemo = aciPluginClass.aciPluginUi.extend({
+
                 write_A: function(method){
                     this._instance.jQuery.append('from A [' + method + ']<br />');
                 },
+
                 direct: function(){
                     this.write_A('direct');
                 },
+
                 timed: function(){
                     this.write_A('timed');
                 },
+
                 error: function(){
                     this.write_A('error');
                 }
+
             }, 'private_a');
 
             aciPluginClass.plugins.superDemo = aciPluginClass.plugins.superDemo.extend({
+
                 write_B: function(method){
                     this._instance.jQuery.append('from B [' + method + ']<br />');
                 },
-                // direct call the parent is ok
+
+                // direct call the parent
                 direct: function(){
                     this.write_B('direct');
                     this._super();
                 },
-                // the way to go with the delayed execution
-                // (stuff that can be run after current method exits, like with a setTimeout)
+
+                // the way to go, keep a reference to _this & _super
                 timed: function(){
                     this.write_B('timed');
                     // save into _this to reference from the anonymous function
@@ -56,23 +65,21 @@
                     // save into _super to reference from the anonymous function
                     var _super = this._super;
                     setTimeout(function(){
-                        // even if _this._super is restored to the old value just after 'timed' method exits
-                        // we still have the reference to the old one ;)
                         _super.apply(_this);
                     }, 500);
                 },
+
                 // this will fail with an error in your browser
-                // just because this._super will be restored to the previous value (undefined) just after the current method exits
-                // (and the setTimeout anonymous function will be run after that - delayed 500 ms)
                 error: function(){
                     this.write_B('error');
                     // save into _this to reference from the anonymous function
                     var _this = this;
                     setTimeout(function(){
-                        // _super will be restored to previous value just after 'error' method exits so we'll get a error
+                        // we'll get a error here because we did not keep the reference to _super
                         _this._super();
                     }, 500);
                 }
+
             }, 'private_b');
 
             aciPluginClass.publish('superDemo');
@@ -82,6 +89,16 @@
             $('#div2').append('timed:<br/>').superDemo('api').timed();
 
             $('#div3').append('error:<br/>').superDemo('api').error();
+
+        </script>
+
+        <script type="text/javascript">
+
+            $(function(){
+
+                $('pre').text($('#code').text());
+
+            });
 
         </script>
 

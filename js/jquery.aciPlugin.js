@@ -1,6 +1,6 @@
 
 /*
- * aciPlugin little jQuery plugin helper v1.1.1
+ * aciPlugin little jQuery plugin helper v1.2.0
  * http://acoderinsights.ro
  *
  * Copyright (c) 2013 Dragos Ursu
@@ -8,41 +8,41 @@
  *
  * Require jQuery Library >= v1.2.3 http://jquery.com
  *
- * Date: Tue Mar 19 20:30 2013 +0200
+ * Date: Fri May 17 19:30 2013 +0200
  */
 
 /*
- * This is not a jQuery plugin but a helper to help you create extendable
- * jQuery plugins. It provide the means to access instance data (with the
+ * aciPlugin is a boilerplate for creating extendable jQuery plugins.
+ * It provide the means to access (from inside plugin methods) instance data (with the
  * '_instance' property), private data (with the '_private' property),
  * you can access the parent overridden function with '_super' and any other
  * parent functions with '_parent'.
- * The object is keept on the element with .data and there exists functionality
- * to get/set default options and getting access to plugin API.
+ * The object instance is keept on the element with .data and there exists 
+ * functionality to get/set default options and getting access to plugin API.
  *
  * A little explanation about how to use this ...
  *
- * To create your plugin, extend the base aciPluginClass.aciPluginUi class like:
- *      aciPluginClass.plugins.[yourPluginName] = aciPluginClass.aciPluginUi.extend([yourPluginObject]);
- * where 'yourPluginName' is the plugin name and 'yourPluginObject' is the plugin object.
+ * To create your plugin, extend the base aciPluginClass.aciPluginUi class:
+ *      aciPluginClass.plugins.yourPluginName = aciPluginClass.aciPluginUi.extend({ ... yourPluginObject ... }, 'yourPluginName');
+ * where 'yourPluginName' is the plugin name and 'yourPluginObject' is the plugin definition.
  *
- * Publish the plugin (and the default options) with:
- *      aciPluginClass.publish('yourPluginName', [defaultOptionsObject]);
+ * Publish the plugin (with the default options):
+ *      aciPluginClass.publish('yourPluginName', { ... defaultOptionsObject ... });
  * where 'yourPluginName' is the plugin name (same as from aciPluginClass.plugins.yourPluginName)
- * and 'defaultOptionsObject' is the default options object (will be available as $.fn.[yourPluginName].defaults).
+ * and 'defaultOptionsObject' is the default options object (will be available as $.fn.yourPluginName.defaults).
  *
- * Extend a plugin like:
- *      aciPluginClass.plugins.[yourPluginName] = aciPluginClass.[yourPluginName].extend([yourPluginExtensionObject], 'yourPluginExtensionName');
- * where 'yourPluginName' is the plugin name, the 'yourPluginExtensionObject' is the extension object and the 'yourPluginExtensionName'
+ * Extend a plugin:
+ *      aciPluginClass.plugins.yourPluginName = aciPluginClass.yourPluginName.extend({ ... yourPluginExtensionObject ... }, 'yourPluginExtensionName');
+ * where 'yourPluginName' is the plugin name, the 'yourPluginExtensionObject' is the extension definition and the 'yourPluginExtensionName'
  * is the extension name to be used to store private data (if any). Private data is stored as an object into
- *      this._instance._private.[yourPluginExtensionName]
- * and there is one default key set: 'nameSpace' equal with ('.' + yourPluginExtensionName). You can use this 'private' namespace
+ *      this._instance._private.yourPluginExtensionName
+ * and there is one default key set: 'nameSpace' equal with String('.' + yourPluginExtensionName). You can use this 'private' namespace
  * for specific extension event (un)binding (for example).
  *
- * Extend the default options (add more options) with:
- *      aciPluginClass.defaults('[yourPluginName]', [extraOptionsObject]);
+ * Extend the default options (add more options):
+ *      aciPluginClass.defaults('yourPluginName', { ... extraOptionsObject ... });
  * where 'yourPluginName' is the plugin name (same as the extended one)
- * and 'extraOptionsObject' is the extra options object to be added (to be available as $.fn.[yourPluginName].defaults).
+ * and 'extraOptionsObject' is the extra options object to be added (to be available as $.fn.yourPluginName.defaults).
  *
  * From within plugin methods you can ...
  *
@@ -53,15 +53,19 @@
  *      this._instance.jQuery.css(style, value);
  *
  * Use the namespace (same as the plugin name with a dot in front):
- *      this._instance.jQuery.bind('click' + this._instance.nameSpace, [function]);
+ *      this._instance.jQuery.bind('click' + this._instance.nameSpace, ... );
  *      this._instance.jQuery.unbind(this._instance.nameSpace);
+ *
+ * Use global instance index:
+ *      $(window).bind('mousemove'  + this._instance.nameSpace + this._instance.index, ... );
+ *      $(window).unbind(this._instance.nameSpace + this._instance.index);
  *
  * Read the options:
  *      var option = this._instance.options.[option];
- * or use the 'options' function:
+ * or use the 'options' method:
  *      var option = this.options('[option]');
  *
- * Call the super/parent functions:
+ * Call the super/parent method:
  *      this._super([argument1], [argument2], ... );
  *      this._parent.[function].apply(this, arguments);
  *      this._parent.[function].call(this, [argument1], [argument2], ... );
@@ -71,16 +75,16 @@
  *      this._private.almostAnything = value
  *
  * Use the private namespace (same as the extension name with a dot in front):
- *      this._instance.jQuery.bind('click' + this._private.nameSpace, [function]);
+ *      this._instance.jQuery.bind('click' + this._private.nameSpace, ... );
  *      this._instance.jQuery.unbind(this._private.nameSpace);
  *
  * Check http://acoderinsights.ro/en/aciPlugin-a-helper-for-jQuery-plugin-creation for a simple plugin example.
  */
 
-(function($){
+(function($, undefined){
 
     // include only once
-    if (typeof aciPluginClass != 'undefined'){
+    if (typeof aciPluginClass !== 'undefined'){
         return;
     }
 
@@ -93,7 +97,7 @@
         aciPluginClass.extend = arguments.callee;
         function aciPluginClass() {
             if (construct){
-                // instance data
+                // keep instance data
                 this._instance = {};
                 return this.__construct.apply(this, arguments);
             }
@@ -118,7 +122,7 @@
                     if (this._instance && extensionName){
                         // need extension name to access private data
                         var _entry = this._instance._private;
-                        if (typeof _entry[extensionName] == 'undefined') {
+                        if (_entry[extensionName] === undefined) {
                             _entry[extensionName] = {
                                 nameSpace: '.' + extensionName
                             };
@@ -136,6 +140,8 @@
         }
         return aciPluginClass;
     };
+
+    var index = 0;
 
     // the plugin core
     aciPluginClass.aciPluginUi = aciPluginClass.extend({
@@ -160,6 +166,8 @@
                 jQuery: jQuery,
                 // keep plugin options
                 options: $.extend({}, $.fn[pluginName].defaults, (typeof settings == 'object') ? settings : {}),
+                // global instance index
+                index: index++,
                 // keep 'init' state
                 wasInit: false
             });
@@ -177,7 +185,7 @@
         },
         __request: function(settings, option, value){
             // process custom request
-            if ((typeof settings == 'undefined') || (typeof settings == 'object')){
+            if ((settings === undefined) || (typeof settings == 'object')){
                 // gets here on a call like: $(element).thePlugin(); or $(element).thePlugin([options]);
                 if (this._instance.options.autoInit){
                     this.init();
@@ -197,7 +205,7 @@
                         };
                     case 'options':
                         // get one or all options, set one or more options
-                        if (typeof option == 'undefined'){
+                        if (option === undefined){
                             // get all options
                             // gets here on a call like: $(element).thePlugin('options');
                             return {

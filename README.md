@@ -1,5 +1,5 @@
 
-aciPlugin - A little jQuery plugin helper
+aciPlugin - A jQuery plugin boilerplate
 
 aciPlugin can help you write extendable jQuery plugins. You can override a
 parent method, call the super method or other parent methods and keep
@@ -10,7 +10,7 @@ for stateful plugins).
 
 See the demo for a basic plugin implementation.
 
-aciPlugin little jQuery plugin helper v1.1.1
+aciPlugin little jQuery plugin helper v1.2.0
 http://acoderinsights.ro
 
 Copyright (c) 2013 Dragos Ursu
@@ -18,4 +18,4 @@ Dual licensed under the MIT or GPL Version 2 licenses.
 
 Require jQuery Library >= v1.2.3 http://jquery.com
 
-Date: Tue Mar 19 20:30 2013 +0200
+Date: Fri May 17 19:30 2013 +0200

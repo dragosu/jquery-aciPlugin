@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>aciPlugin demo - A helper for jQuery plugin creation</title>
+        <title>aciPlugin demo - A jQuery plugin boilerplate</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <script type="text/javascript" src="js/jquery.min.js"></script>
         <script type="text/javascript" src="js/jquery.aciPlugin.js"></script>
@@ -9,7 +9,7 @@
     <body>
 
         <p>Dig into source code and/or visit the
-            <a href="http://acoderinsights.ro/en/aciPlugin-a-helper-for-jQuery-plugin-creation" title="A helper for jQuery plugin creation">page</a>
+            <a href="http://acoderinsights.ro/en/aciPlugin-a-helper-for-jQuery-plugin-creation" title="A jQuery plugin boilerplate">page</a>
             to read about this sample plugin implementation.</p>
 
         <p>See a demo for private data usage <a href="private.html" target="_blank" title="Private data usage">here</a>.</p>
@@ -24,7 +24,9 @@
         <a class="button5" href="#" title="">button 5</a> <br />
         <a class="button6" href="#" title="">button 6</a> <br />
 
-        <script type="text/javascript">
+        <pre style="padding:30px;border:1px dashed #000;background:#f6f6f6;display:inline-block;"></pre>
+
+        <script id="code" type="text/javascript">
 
             // create 'myButton' plugin ...
 
@@ -33,6 +35,7 @@
                 // create myButton plugin to make a link (for example) into a button
                 // with padding set, a background color and display inline-block
                 aciPluginClass.plugins.myButton = aciPluginClass.aciPluginUi.extend({
+
                     init: function(){
                         this._super();
                         // we do not use states for this plugin ...
@@ -46,6 +49,7 @@
                         // destroy it cause there is no need for it anymore (the job was done)
                         this.destroy();
                     }
+
                 });
 
                 // register the plugin to be usable (with default options set)
@@ -85,6 +89,7 @@
 
                 // extend myButton to set a border on the button
                 aciPluginClass.plugins.myButton = aciPluginClass.plugins.myButton.extend({
+
                     init: function(){
                         this._instance.jQuery.css({
                             'border-style': this._instance.options.style,
@@ -94,6 +99,7 @@
                         // call the original 'init'
                         this._super();
                     }
+                    
                 });
 
                 // add a few more default options
@@ -145,6 +151,16 @@
                     $(this).myButton('api').init();
                 });
             }, timer += 1500);
+
+        </script>
+
+        <script type="text/javascript">
+
+            $(function(){
+
+                $('pre').text($('#code').text());
+
+            });
 
         </script>
 
