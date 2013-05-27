@@ -1,14 +1,12 @@
 
 /*
- * aciPlugin little jQuery plugin helper v1.2.0
+ * aciPlugin little jQuery plugin helper v1.3.0
  * http://acoderinsights.ro
  *
  * Copyright (c) 2013 Dragos Ursu
  * Dual licensed under the MIT or GPL Version 2 licenses.
  *
  * Require jQuery Library >= v1.2.3 http://jquery.com
- *
- * Date: Fri May 17 19:30 2013 +0200
  */
 
 /*
@@ -81,24 +79,26 @@
  * Check http://acoderinsights.ro/en/aciPlugin-a-helper-for-jQuery-plugin-creation for a simple plugin example.
  */
 
-(function($, undefined){
+(function($, window, undefined) {
 
     // include only once
-    if (typeof aciPluginClass !== 'undefined'){
+    if (typeof aciPluginClass !== 'undefined') {
         return;
     }
 
     var construct;
 
-    this.aciPluginClass = function(){};
+    this.aciPluginClass = function() {
+    };
 
     // a basic extendable class
-    aciPluginClass.extend = function(properties, extensionName){
+    aciPluginClass.extend = function(properties, extensionName) {
         aciPluginClass.extend = arguments.callee;
         function aciPluginClass() {
-            if (construct){
+            if (construct) {
                 // keep instance data
-                this._instance = {};
+                this._instance = {
+                };
                 return this.__construct.apply(this, arguments);
             }
         }
@@ -106,37 +106,37 @@
         aciPluginClass.prototype = new this();
         construct = true;
         var parent = this.prototype;
-        for (var name in properties){
+        for (var name in properties) {
             // extend with the new object
-            aciPluginClass.prototype[name] = (typeof properties[name] == 'function') ?
-            (function(name){
-                return function() {
-                    // parent access
-                    var _parent = this._parent;
-                    this._parent = parent;
-                    // super access
-                    var _super = this._super;
-                    this._super = parent[name];
-                    // private data
-                    var _private = this._private;
-                    if (this._instance && extensionName){
-                        // need extension name to access private data
-                        var _entry = this._instance._private;
-                        if (_entry[extensionName] === undefined) {
-                            _entry[extensionName] = {
-                                nameSpace: '.' + extensionName
-                            };
-                        }
-                        this._private = _entry[extensionName];
-                    }
-                    var result = properties[name].apply(this, arguments);
-                    // restore old properties
-                    this._parent = _parent;
-                    this._super = _super;
-                    this._private = _private;
-                    return result;
-                };
-            })(name) : properties[name];
+            aciPluginClass.prototype[name] = ((typeof properties[name] == 'function') && (name != 'proxy')) ?
+                    (function(name) {
+                        return function() {
+                            // parent access
+                            var _parent = this._parent;
+                            this._parent = parent;
+                            // super access
+                            var _super = this._super;
+                            this._super = parent[name];
+                            // private data
+                            var _private = this._private;
+                            if (this._instance && extensionName) {
+                                // need extension name to access private data
+                                var _entry = this._instance._private;
+                                if (_entry[extensionName] === undefined) {
+                                    _entry[extensionName] = {
+                                        nameSpace: '.' + extensionName
+                                    };
+                                }
+                                this._private = _entry[extensionName];
+                            }
+                            var result = properties[name].apply(this, arguments);
+                            // restore old properties
+                            this._parent = _parent;
+                            this._super = _super;
+                            this._private = _private;
+                            return result;
+                        };
+                    })(name) : properties[name];
         }
         return aciPluginClass;
     };
@@ -145,11 +145,20 @@
 
     // the plugin core
     aciPluginClass.aciPluginUi = aciPluginClass.extend({
-        __construct: function(pluginName, jQuery, settings, option, value){
+        /**
+         * Construct/init the object.
+         * @param {string} pluginName
+         * @param {object} jQuery
+         * @param {mixed} settings
+         * @param {string} option
+         * @param {mixed} value
+         * @returns {mixed}
+         */
+        __construct: function(pluginName, jQuery, settings, option, value) {
             // basic initialization
             var nameSpace = '.' + pluginName;
             var object = jQuery.data(nameSpace);
-            if (object){
+            if (object) {
                 // object already constructed, restore old data
                 this._instance = object._instance;
                 return object.__request(settings, option, value);
@@ -159,13 +168,16 @@
             // note: names defined here are reserved, also check the plugin '__extend' definition before you extend a plugin
             $.extend(this._instance, {
                 // this will keep private data into 'this._instance._private[extensionName]' (accessible as 'this._private' within plugin methods)
-                _private: {},
+                _private: {
+                },
                 // plugin namespace
                 nameSpace: nameSpace,
                 // the jQuery element
                 jQuery: jQuery,
                 // keep plugin options
-                options: $.extend({}, $.fn[pluginName].defaults, (typeof settings == 'object') ? settings : {}),
+                options: $.extend({
+                }, $.fn[pluginName].defaults, (typeof settings == 'object') ? settings : {
+                }),
                 // global instance index
                 index: index++,
                 // keep 'init' state
@@ -175,23 +187,33 @@
             this.__extend();
             return this.__request(settings, option, value);
         },
-        __extend: function(){
-        // override this to add extra instance/private data on construct
-        // do not override predefined reserved keys from '__construct' (and the base object incase of an extension)
-        // $.extend(this._instance, {
-        //        option1: [value],
-        //        option2: [value]
-        //    });
+        /**
+         * Called before exit from the __construct to add extra instance/private data.
+         */
+        __extend: function() {
+            // override this to add extra instance/private data on construct
+            // do not override predefined reserved keys from '__construct' (and the base object incase of an extension)
+            // $.extend(this._instance, {
+            //        option1: [value],
+            //        option2: [value]
+            //    });
         },
-        __request: function(settings, option, value){
+        /**
+         * Called from the __construct to process the request (init, destroy, access API etc.)
+         * @param {mixed} settings
+         * @param {string} option
+         * @param {mixed} value
+         * @returns {mixed}
+         */
+        __request: function(settings, option, value) {
             // process custom request
-            if ((settings === undefined) || (typeof settings == 'object')){
+            if ((settings === undefined) || (typeof settings == 'object')) {
                 // gets here on a call like: $(element).thePlugin(); or $(element).thePlugin([options]);
-                if (this._instance.options.autoInit){
+                if (this._instance.options.autoInit) {
                     this.init();
                 }
-            } else if (typeof settings == 'string'){
-                switch (settings){
+            } else if (typeof settings == 'string') {
+                switch (settings) {
                     case 'init':
                         // init the UI
                         // gets here on a call like: $(element).thePlugin('init');
@@ -205,13 +227,13 @@
                         };
                     case 'options':
                         // get one or all options, set one or more options
-                        if (option === undefined){
+                        if (option === undefined) {
                             // get all options
                             // gets here on a call like: $(element).thePlugin('options');
                             return {
                                 object: this.options()
                             };
-                        } else if (typeof option == 'string'){
+                        } else if (typeof option == 'string') {
                             // get one option
                             // gets here on a call like: $(element).thePlugin('options', '[option]');
                             return {
@@ -237,26 +259,59 @@
             }
             return this._instance.jQuery;
         },
-        init: function(){
+        /**
+         * Change the context of a function to the current instance (extra arguments will go into first positions of the called function).
+         * @param {function} fn
+         * @returns {function}
+         */
+        proxy: function(fn) {
+            var slice = window.Array.prototype.slice;
+            var extra = slice.call(arguments, 1);
+            var context = this, _parent = context._parent, _super = context._super, _private = context._private;
+            return function() {
+                context._parent = _parent;
+                context._super = _super;
+                context._private = _private;
+                var result = fn.apply(context, extra.concat(slice.call(arguments)));
+                context._private = _private;
+                context._super = _super;
+                context._parent = _parent;
+                return result;
+            };
+        },
+        /**
+         * Init the plugin instance (if was not init already).
+         * @returns {bool}
+         */
+        init: function() {
             // init UI
-            if (!this._instance.wasInit){
+            if (!this._instance.wasInit) {
                 this._instance.wasInit = true;
                 return true;
             }
             return false;
         },
-        wasInit: function(){
+        /**
+         * Test is the plugin was init.
+         * @returns {bool}
+         */
+        wasInit: function() {
             // get init state
             return this._instance.wasInit;
         },
-        options: function(options){
-            if (options){
-                if (typeof options == 'string'){
+        /**
+         * Get all init options or a specific one/Set many options at once.
+         * @param {mixed} options
+         * @returns {mixed}
+         */
+        options: function(options) {
+            if (options) {
+                if (typeof options == 'string') {
                     // get one option
                     return this._instance.options[options];
                 } else {
                     // set more options
-                    for(var option in options){
+                    for (var option in options) {
                         this.option(option, options[option]);
                     }
                 }
@@ -265,13 +320,22 @@
                 return this._instance.options;
             }
         },
-        option: function(option, value){
+        /**
+         * Set one plugin option.
+         * @param {string} option
+         * @param {mixed} value
+         */
+        option: function(option, value) {
             // set one option
             this._instance.options[option] = value;
         },
-        destroy: function(){
+        /**
+         * Destroy the plugin instance (if was init).
+         * @returns {bool}
+         */
+        destroy: function() {
             // destroy UI
-            if (this._instance.wasInit){
+            if (this._instance.wasInit) {
                 this._instance.wasInit = false;
                 // remove this object from element's data
                 this._instance.jQuery.removeData(this._instance.nameSpace);
@@ -282,16 +346,17 @@
     });
 
     // keep the plugins here
-    aciPluginClass.plugins = {};
+    aciPluginClass.plugins = {
+    };
 
     // publish our plugin so we can use it
-    aciPluginClass.publish = function(pluginName, defaults){
+    aciPluginClass.publish = function(pluginName, defaults) {
         // add our plugin
-        $.fn[pluginName] = function(options, option, value){
+        $.fn[pluginName] = function(options, option, value) {
             var result = null;
-            for(var i = 0, size = this.length; i < size; i++){
+            for (var i = 0, size = this.length; i < size; i++) {
                 result = new aciPluginClass.plugins[pluginName](pluginName, $(this[i]), options, option, value);
-                if (!(result instanceof jQuery)){
+                if (!(result instanceof $)) {
                     return result.object;
                 }
             }
@@ -300,12 +365,15 @@
         // set the defaults
         $.fn[pluginName].defaults = $.extend({
             autoInit: true
-        }, (typeof defaults == 'object') ? defaults : {});
+        },
+        (typeof defaults == 'object') ? defaults : {
+        });
     };
 
     // extend the default options
-    aciPluginClass.defaults = function(pluginName, extend){
-        $.extend($.fn[pluginName].defaults, (typeof extend == 'object') ? extend : {});
+    aciPluginClass.defaults = function(pluginName, extend) {
+        $.extend($.fn[pluginName].defaults, (typeof extend == 'object') ? extend : {
+        });
     };
 
-})(jQuery);
+})(jQuery, this);

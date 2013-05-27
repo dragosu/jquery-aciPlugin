@@ -10,9 +10,10 @@
 
         <p><b>_super</b> parent call test: each call will write a string down in a DIV then call the parent method.<br />
             Calling the 'direct' method will process things without a delay. The 'timed' and 'error' methods both delay execution when calling the parent method with <b>_super</b>.<br />
-        The delay is done with a setTimeout, the current method will exit before setTimeout calls the anonymous function.<br />
-        The call to the 'error' method will produce an error in your browser.<br />
-        The way to handle this is with the 'timed' method, where '_super' is saved to a local variable too.
+            The delay is done with a setTimeout, the current method will exit before setTimeout calls the anonymous function.<br />
+            The call to the 'error' method will generate an error in your browser (see the error console).<br />
+            The way to handle this is with the 'timed' method, where '_super' is saved to a local variable too.
+            As of v1.3.0 the <b>.proxy</b> method can be used (instead of keeping a local reference to _super etc.)
         </p>
 
         <p>Note: see the source code to understand what's going on with the 'superDemo' implementation.</p>
@@ -20,61 +21,74 @@
         <div id="div1"></div>
         <div id="div2"></div>
         <div id="div3"></div>
+        <div id="div4"></div>
 
         <pre style="padding:30px;border:1px dashed #000;background:#f6f6f6;display:inline-block;"></pre>
 
         <script id="code" type="text/javascript">
 
             aciPluginClass.plugins.superDemo = aciPluginClass.aciPluginUi.extend({
-
-                write_A: function(method){
+                
+                write_A: function(method) {
                     this._instance.jQuery.append('from A [' + method + ']<br />');
                 },
-
-                direct: function(){
+                        
+                direct: function() {
                     this.write_A('direct');
                 },
-
-                timed: function(){
+                        
+                timed: function() {
                     this.write_A('timed');
                 },
-
-                error: function(){
+                        
+                timedProxy: function() {
+                    this.write_A('timedProxy');
+                },                        
+                        
+                error: function() {
                     this.write_A('error');
                 }
 
             }, 'private_a');
 
             aciPluginClass.plugins.superDemo = aciPluginClass.plugins.superDemo.extend({
-
-                write_B: function(method){
+                
+                write_B: function(method) {
                     this._instance.jQuery.append('from B [' + method + ']<br />');
                 },
-
+                        
                 // direct call the parent
-                direct: function(){
+                direct: function() {
                     this.write_B('direct');
                     this._super();
                 },
-
+                        
                 // the way to go, keep a reference to _this & _super
-                timed: function(){
+                timed: function() {
                     this.write_B('timed');
                     // save into _this to reference from the anonymous function
                     var _this = this;
                     // save into _super to reference from the anonymous function
                     var _super = this._super;
-                    setTimeout(function(){
+                    setTimeout(function() {
                         _super.apply(_this);
                     }, 500);
                 },
 
+                // as of v1.3.0 we can use the .proxy method
+                timedProxy: function() {
+                    this.write_B('timedProxy');
+                    setTimeout(this.proxy(function(){
+                        this._super();
+                    }), 500);
+                },
+
                 // this will fail with an error in your browser
-                error: function(){
+                error: function() {
                     this.write_B('error');
                     // save into _this to reference from the anonymous function
                     var _this = this;
-                    setTimeout(function(){
+                    setTimeout(function() {
                         // we'll get a error here because we did not keep the reference to _super
                         _this._super();
                     }, 500);
@@ -88,13 +102,15 @@
 
             $('#div2').append('timed:<br/>').superDemo('api').timed();
 
-            $('#div3').append('error:<br/>').superDemo('api').error();
+            $('#div3').append('timedProxy:<br/>').superDemo('api').timedProxy();
+
+            $('#div4').append('error:<br/>').superDemo('api').error();
 
         </script>
 
         <script type="text/javascript">
 
-            $(function(){
+            $(function() {
 
                 $('pre').text($('#code').text());
 

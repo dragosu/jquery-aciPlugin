@@ -13,7 +13,7 @@
 
         <p>Note: see the source code to understand what's going on with the 'privateDemo' implementation.</p>
 
-        <div></div>
+        <div class="result"></div>
 
         <pre style="padding:30px;border:1px dashed #000;background:#f6f6f6;display:inline-block;"></pre>
 
@@ -113,13 +113,13 @@
             aciPluginClass.publish('privateDemo');
 
             // call _super before write
-            $('div').append('before:<br/>').privateDemo('api').before();
+            $('.result').append('before:<br/>').privateDemo('api').before();
 
             // this will reset the values (in our case)
-            $('div').privateDemo('api').__extend();
+            $('.result').privateDemo('api').__extend();
 
             // call _super after write
-            $('div').append('after:<br/>').privateDemo('api').after();
+            $('.result').append('after:<br/>').privateDemo('api').after();
 
         </script>
 
