@@ -1,6 +1,6 @@
 
 /*
- * aciPlugin little jQuery plugin helper v1.3.0
+ * aciPlugin little jQuery plugin helper v1.4.0
  * http://acoderinsights.ro
  *
  * Copyright (c) 2013 Dragos Ursu
@@ -112,13 +112,13 @@
                     (function(name) {
                         return function() {
                             // parent access
-                            var _parent = this._parent;
+                            var parentSaved = this._parent;
                             this._parent = parent;
                             // super access
-                            var _super = this._super;
+                            var superSaved = this._super;
                             this._super = parent[name];
                             // private data
-                            var _private = this._private;
+                            var privateSaved = this._private;
                             if (this._instance && extensionName) {
                                 // need extension name to access private data
                                 var _entry = this._instance._private;
@@ -131,9 +131,9 @@
                             }
                             var result = properties[name].apply(this, arguments);
                             // restore old properties
-                            this._parent = _parent;
-                            this._super = _super;
-                            this._private = _private;
+                            this._parent = parentSaved;
+                            this._super = superSaved;
+                            this._private = privateSaved;
                             return result;
                         };
                     })(name) : properties[name];
@@ -260,23 +260,21 @@
             return this._instance.jQuery;
         },
         /**
-         * Change the context of a function to the current instance (extra arguments will go into first positions of the called function).
+         * Change the context of a function to the current instance (extra arguments will go into first
+         * positions of the called function, after the current context - when passContext is TRUE).
          * @param {function} fn
+         * @param {bool} passContext
          * @returns {function}
          */
-        proxy: function(fn) {
+        proxy: function(fn, passContext) {
             var slice = window.Array.prototype.slice;
-            var extra = slice.call(arguments, 1);
-            var context = this, _parent = context._parent, _super = context._super, _private = context._private;
+            var extra = slice.call(arguments, 2);
+            var context = this, parentContext = context._parent, superContext = context._super, privateContext = context._private;
             return function() {
-                context._parent = _parent;
-                context._super = _super;
-                context._private = _private;
-                var result = fn.apply(context, extra.concat(slice.call(arguments)));
-                context._private = _private;
-                context._super = _super;
-                context._parent = _parent;
-                return result;
+                context._parent = parentContext;
+                context._super = superContext;
+                context._private = privateContext;
+                return fn.apply(context, passContext ? extra.concat([this], slice.call(arguments)) : extra.concat(slice.call(arguments)));
             };
         },
         /**
