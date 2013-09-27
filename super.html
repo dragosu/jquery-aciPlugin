@@ -23,9 +23,7 @@
         <div id="div3"></div>
         <div id="div4"></div>
 
-        <pre style="padding:30px;border:1px dashed #000;background:#f6f6f6;display:inline-block;"></pre>
-
-        <script id="code" type="text/javascript">
+        <script class="code" type="text/javascript">
 
             aciPluginClass.plugins.superDemo = aciPluginClass.aciPluginUi.extend({
                 
@@ -112,7 +110,10 @@
 
             $(function() {
 
-                $('pre').text($('#code').text());
+                $('script.code').each(function() {
+                    $(this).before('<div style="clear:both;margin:10px 0 10px 0"><pre style="padding:20px;border:1px dashed #000;background:#f6f6f6;display:inline-block;"></pre></div>');
+                    $(this).prev('div').find('pre').text($(this).html());
+                });
 
             });
 

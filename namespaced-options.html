@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>aciPlugin namespaced options - A jQuery plugin boilerplate</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script type="text/javascript" src="js/jquery.min.js"></script>
+        <script type="text/javascript" src="js/jquery.aciPlugin.js"></script>
+    </head>
+    <body>
+
+        <p>This is a demo to show using namespaced options, setting a property inside an object set as an option is now possible.</p>
+
+        <div class="result"></div>
+
+        <script class="code" type="text/javascript">
+
+            // a simple plugin
+
+            (function($, window, undefined) {
+
+                // some default options
+
+                var options = {
+                    sample: 'a sample',
+                    border: {
+                        width: '4px',
+                        color: 'black'
+                    }
+                };
+
+                var myPlugin = {
+                    // empty for this demo
+                };
+
+                aciPluginClass.plugins.myPlugin = aciPluginClass.aciPluginUi.extend(myPlugin, 'myPlugin');
+
+                aciPluginClass.publish('myPlugin', options);
+
+            })(jQuery, this);
+
+            // create a plugin instance
+
+            $('.result').myPlugin();
+
+            // get the API
+
+            var api = $('.result').myPlugin('api');
+
+            // get/set plugin option
+
+            var log = $('.result');
+
+            log.append('sample: ' + api.options('sample') + '<br>');
+            log.append('border.width: ' + api.options('border.width') + '<br>');
+            log.append('border.color: ' + api.options('border.color') + '<br>');
+
+            api.option('sample', 'a new sample');
+            api.option('border.width', '12px');
+            api.option('border.color', 'red');
+
+            log.append('sample: ' + api.options('sample') + '<br>');
+            log.append('border.width: ' + api.options('border.width') + '<br>');
+            log.append('border.color: ' + api.options('border.color') + '<br>');
+
+            api.options({
+                sample: 'setting many at once',
+                'border.width': '2em'
+            });
+
+            log.append('sample: ' + api.options('sample') + '<br>');
+            log.append('border.width: ' + api.options('border.width') + '<br>');
+            log.append('border.color: ' + api.options('border.color') + '<br>');
+
+        </script>
+
+        <script type="text/javascript">
+
+            $(function() {
+
+                $('script.code').each(function() {
+                    $(this).before('<div style="clear:both;margin:10px 0 10px 0"><pre style="padding:20px;border:1px dashed #000;background:#f6f6f6;display:inline-block;"></pre></div>');
+                    $(this).prev('div').find('pre').text($(this).html());
+                });
+
+            });
+
+        </script>
+
+    </body>
+</html>

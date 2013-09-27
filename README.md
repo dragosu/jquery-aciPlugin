@@ -10,7 +10,7 @@ for stateful plugins).
 
 See the demo for a basic plugin implementation.
 
-aciPlugin little jQuery plugin helper v1.4.0
+aciPlugin little jQuery plugin helper v1.5.0
 http://acoderinsights.ro
 
 Copyright (c) 2013 Dragos Ursu

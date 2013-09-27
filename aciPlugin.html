@@ -15,6 +15,8 @@
         <p>See a demo for private data usage <a href="private.html" target="_blank" title="Private data usage">here</a>.</p>
 
         <p>See a demo for _super (parent method call) <a href="super.html" target="_blank" title="Parent method call">here</a>.</p>
+        
+        <p>(<span style="color:red">new</span>) See a demo for setting/getting namespaced options <a href="namespaced-options.html" target="_blank" title="Namespaced options">here</a></p>
 
         <a class="button" href="#" title="">button</a> (changed each time) <br />
         <a class="button1" href="#" title="">button 1</a> <br />
@@ -24,9 +26,7 @@
         <a class="button5" href="#" title="">button 5</a> <br />
         <a class="button6" href="#" title="">button 6</a> <br />
 
-        <pre style="padding:30px;border:1px dashed #000;background:#f6f6f6;display:inline-block;"></pre>
-
-        <script id="code" type="text/javascript">
+        <script class="code" type="text/javascript">
 
             // create 'myButton' plugin ...
 
@@ -156,9 +156,12 @@
 
         <script type="text/javascript">
 
-            $(function(){
+            $(function() {
 
-                $('pre').text($('#code').text());
+                $('script.code').each(function() {
+                    $(this).before('<div style="clear:both;margin:10px 0 10px 0"><pre style="padding:20px;border:1px dashed #000;background:#f6f6f6;display:inline-block;"></pre></div>');
+                    $(this).prev('div').find('pre').text($(this).html());
+                });
 
             });
 

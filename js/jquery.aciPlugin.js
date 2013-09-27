@@ -1,6 +1,6 @@
 
 /*
- * aciPlugin little jQuery plugin helper v1.4.0
+ * aciPlugin little jQuery plugin helper v1.5.0
  * http://acoderinsights.ro
  *
  * Copyright (c) 2013 Dragos Ursu
@@ -76,7 +76,6 @@
  *      this._instance.jQuery.bind('click' + this._private.nameSpace, ... );
  *      this._instance.jQuery.unbind(this._private.nameSpace);
  *
- * Check http://acoderinsights.ro/en/aciPlugin-a-helper-for-jQuery-plugin-creation for a simple plugin example.
  */
 
 (function($, window, undefined) {
@@ -298,19 +297,46 @@
             return this._instance.wasInit;
         },
         /**
+         * Return parent object & property as entry.name.
+         * @param {object} context
+         * @param {string} name
+         * @param {object} entry
+         * @returns {object}
+         */
+        __parent: function(context, name, entry) {
+            var names = name.split('.');
+            if (names.length > 1) {
+                var parent = context, last;
+                for (var i in names) {
+                    last = parent;
+                    parent = parent[names[i]];
+                }
+                entry.name = names[i];
+                return last;
+            }
+            entry.name = name;
+            return context;
+        },
+        /**
          * Get all init options or a specific one/Set many options at once.
          * @param {mixed} options
          * @returns {mixed}
          */
         options: function(options) {
             if (options) {
+                var entry = {
+                    name: null
+                };
+                var parent;
                 if (typeof options == 'string') {
                     // get one option
-                    return this._instance.options[options];
+                    parent = this.__parent(this._instance.options, options, entry);
+                    return parent[entry.name];
                 } else {
-                    // set more options
+                    // set many options
                     for (var option in options) {
-                        this.option(option, options[option]);
+                        parent = this.__parent(this._instance.options, option, entry);
+                        parent[entry.name] = options[option];
                     }
                 }
             } else {
@@ -324,8 +350,11 @@
          * @param {mixed} value
          */
         option: function(option, value) {
-            // set one option
-            this._instance.options[option] = value;
+            var entry = {
+                name: null
+            };
+            var parent = this.__parent(this._instance.options, option, entry);
+            parent[entry.name] = value;
         },
         /**
          * Destroy the plugin instance (if was init).
