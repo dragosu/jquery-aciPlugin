@@ -1,6 +1,6 @@
 
 /*
- * aciPlugin little jQuery plugin helper v1.5.0
+ * aciPlugin little jQuery plugin helper v1.5.1
  * http://acoderinsights.ro
  *
  * Copyright (c) 2013 Dragos Ursu
@@ -165,7 +165,7 @@
             // save this into element's data for later reference
             jQuery.data(nameSpace, this);
             // note: names defined here are reserved, also check the plugin '__extend' definition before you extend a plugin
-            $.extend(this._instance, {
+            $.extend(true, this._instance, {
                 // this will keep private data into 'this._instance._private[extensionName]' (accessible as 'this._private' within plugin methods)
                 _private: {
                 },
@@ -174,7 +174,7 @@
                 // the jQuery element
                 jQuery: jQuery,
                 // keep plugin options
-                options: $.extend({
+                options: $.extend(true, {
                 }, $.fn[pluginName].defaults, (typeof settings == 'object') ? settings : {
                 }),
                 // global instance index
@@ -390,7 +390,7 @@
             return this;
         };
         // set the defaults
-        $.fn[pluginName].defaults = $.extend({
+        $.fn[pluginName].defaults = $.extend(true, {
             autoInit: true
         },
         (typeof defaults == 'object') ? defaults : {
@@ -399,7 +399,7 @@
 
     // extend the default options
     aciPluginClass.defaults = function(pluginName, extend) {
-        $.extend($.fn[pluginName].defaults, (typeof extend == 'object') ? extend : {
+        $.extend(true, $.fn[pluginName].defaults, (typeof extend == 'object') ? extend : {
         });
     };
 
