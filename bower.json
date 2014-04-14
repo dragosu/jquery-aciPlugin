@@ -1,0 +1,44 @@
+
+{
+    "name": "aciPlugin",
+    "title": "aciPlugin - A jQuery plugin boilerplate",
+    "description": "aciPlugin can help you write extendable jQuery plugins. You can override a parent method, call the super method or other parent methods and keep instance and private data. The extension to a plugin can have its own default options that will be added to the extended ones. aciPlugin has built in functionality to get/set plugin options and check the 'init' state (useful for stateful plugins).",
+    "keywords": [
+    "boilerplate",
+    "extendable",
+    "jquery",
+    "plugin",
+    "stateful",
+    "instance",
+    "super",
+    "parent",
+    "private"
+    ],
+    "version": "1.5.1",
+    "author": {
+        "name": "Dragos Ursu",
+        "email":"dragosu@acoderinsights.ro",
+        "url": "https://github.com/dragosu"
+    },
+    "maintainers": [{
+        "name": "Dragos Ursu",
+        "email":"dragosu@acoderinsights.ro",
+        "url": "https://github.com/dragosu"
+    }],
+    "licenses": [{
+        "type": "MIT",
+        "url": "http://acoderinsights.ro/source/aciPlugin/mit-licence.txt"
+    },{
+        "type": "GPLv2",
+        "url": "http://acoderinsights.ro/source/aciPlugin/gpl-v2-licence.txt"
+    }],
+    "homepage": "http://acoderinsights.ro",
+    "demo": "http://acoderinsights.ro/source/aciPlugin/aciPlugin.html",
+    "download": "http://acoderinsights.ro/source/zip/aciPlugin.zip",
+    "docs": "http://acoderinsights.ro/en/aciPlugin-a-helper-for-jQuery-plugin-creation",
+    "bugs": "https://github.com/dragosu/jquery-aciPlugin/issues",
+    "dependencies": {
+        "jquery": ">=1.2.3"
+    },
+    "main": "js/jquery.aciPlugin.js"
+}
